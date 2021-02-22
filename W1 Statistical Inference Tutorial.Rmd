@@ -1,0 +1,96 @@
+---
+title: "W1 Statistical Inference Tutorial"
+author: "Wanchuang Zhu"
+date: "29/01/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Data download
+1. Data source: http://www.bom.gov.au/climate/data/  
+2. Bureau of Meteorology station number: 66214  
+3. Station name: SYDNEY (OBSERVATORY HILL)  
+4. Period: 2019.12.01-2020.02.29  
+
+# Probability Theory
+Question 1. Derive the second moment of $X\sim N(\mu,\sigma^2)$.  
+
+Solution:  
+$E(X^2) = \int_{-\infty}^{\infty} x^2 \frac{1}{\sqrt{2\pi} \sigma} \exp\{ -\frac{(x-\mu)^2}{2\sigma^2} \} dx$  
+change of variable $y= \frac{x-\mu}{\sigma}$  
+$= \int_{-\infty}^{\infty} (y\sigma+\mu)^2 \frac{1}{\sqrt{2\pi} \sigma} \exp\{ -\frac{y^2}{2} \} \sigma dy$  
+$= \int_{-\infty}^{\infty} (y^2 \sigma^2 + 2 \mu y \sigma +\mu^2) \frac{1}{\sqrt{2 \pi} \sigma } \exp\{-\frac{y^2}{2} \} \sigma dy$
+
+because $\int_{-\infty}^{\infty} (2 \mu y \sigma) \frac{1}{\sqrt{2\pi} \sigma} \exp\{ -\frac{y^2}{2} \} \sigma dy = 0$  
+
+$= \int_{-\infty}^{\infty} (y^2\sigma^2+\mu^2) \frac{1}{\sqrt{2\pi} \sigma} \exp\{ -\frac{y^2}{2} \} \sigma dy$
+
+because $= \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi} } \exp\{ -\frac{y^2}{2} \} dy =1$   
+$= \mu^2 +\int_{-\infty}^{\infty} (y^2\sigma^2) \frac{1}{\sqrt{2\pi}} \exp\{ -\frac{y^2}{2} \} dy$
+using integration by parts   
+$=\mu^2 +\sigma^2$.  
+
+Question 2. Derive the moment generating function $M_X(t)$ of $X\sim N(0,1)$.  
+
+Solution: $M_X(t) = \exp \{ \frac{1}{2} t^2\}$.   
+$M_X(t) = E(e^{tX}) = \int_{-\infty}^{\infty} e^{tx} \frac{1}{\sqrt{2\pi}} \exp\{ -\frac{x^2}{2} \}dx$  
+$= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} \exp\{ -\frac{x^2 -2tx}{2} \}dx$
+$= \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \exp\{-\frac{x^2 -2tx +t^2}{2}\} \exp\{\frac{t^2}{2}\}dx$  
+because $\frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} \exp\{ -\frac{x^2 -2tx +t^2}{2} \} dx=1$  
+$=\exp \{ \frac{1}{2} t^2\}$. 
+
+Question 3. Suppose $(X_1,X_2)$ is bivariate normal distribution with mean vector $(\mu_1,\mu_2)$ and covariance matrix $\Sigma$. What is the marginal distribution of $X_1$?
+
+Solution: $X_1 \sim N(\mu_1,\Sigma_{1,1})$.   
+
+# Maximum Likelihood Estimation
+
+Question 1. Suppose the daily maximum temperature is distributed as $Exp(\lambda)$,whose density function is $f(x)=\lambda \exp\{-\lambda x\}$ , what is the MLE of $\lambda$ ?  
+
+Solution:  
+  The likelihood function is $L(x_1,\cdots,x_n \mid \lambda) = \prod_{i=1}^n \lambda \exp\{-\lambda x_i\}$. And the loglikelihood is $l(x_1,\cdots,x_n \mid \lambda) = \sum_{i=1}^n log(\lambda) -\lambda x_i = nlog(\lambda) -\lambda \sum_{i=1}^n x_i$.  
+  So $\frac{\partial l(x_1,\cdots,x_n \mid \lambda)}{\partial \lambda} = n/\lambda -\sum_{i=1}^n x_i$, the solution of $\frac{\partial l(x_1,\cdots,x_n \mid \lambda)}{\partial \lambda}= 0$ is $\hat{\lambda} = \frac{n}{\sum_{i=1}^n x_i}$.  
+
+
+Question 2. For an Exponential distribution $Exp(\lambda)$, what is the Fisher Information?  
+Solution: recall that the log-likelihood function of exponential distribution is $l(X \mid \lambda) = log(\lambda) -\lambda X$, the second derivative is $\frac{\partial ^2 l }{\partial ^2 \lambda} = -\frac{1}{\lambda^2}$. Thus, Fisher Information $I(\lambda) = -\int -\frac{1}{\lambda^2} \lambda \exp\{-\lambda x\} dx =  \frac{1}{\lambda^2}$.
+
+# Bayesian Inference
+
+## Posterior distributions of $\mu$ and $\sigma^2$ 
+
+The prior distributions  
+$\pi(\mu \mid \sigma^2) \sim N(\mu_0, c\sigma^2)$, $c$ should be a large positive number.  
+$\pi(\sigma^2) \sim IG(\alpha_0,\beta_0)$, where density function of IG distribution is $f(x\mid \alpha,\beta) = \frac{\beta^\alpha}{\Gamma(\alpha)}x^{-\alpha-1}\exp\{-\frac{\beta}{x}\}$  
+So the joint posterior distribution of $(\mu,\sigma^2)$ is  
+
+$\pi(\mu,\sigma^2\mid x) \propto f(x\mid \mu,\sigma^2) \pi(\mu\mid \sigma^2)\pi(\sigma^2)$  
+$= (\frac{1}{\sqrt{2\pi}\sigma})^n \exp\{-\frac{\sum_{i=1}^{n}(x_i-\mu)^2}{2\sigma^2}\} \frac{1}{\sqrt{2\pi}\sqrt{c}\sigma}\exp\{-\frac{(\mu-\mu_0)^2}{2c\sigma^2}\}\frac{{\beta_0}^{\alpha_0}}{\Gamma(\alpha_0)} (\sigma^2)^{-\alpha_0 -1}\exp\{-\frac{\beta_0}{\sigma^2}\}$.
+
+1. The marginal posterior distribution of $\mu$ is  
+$\pi(\mu,\mid x, \sigma^2) \propto f(x\mid \mu,\sigma^2) \pi(\mu\mid \sigma^2)\pi(\sigma^2)$  
+$\propto (\frac{1}{\sqrt{2\pi}\sigma})^n \exp\{-\frac{\sum_{i=1}^{n}(x_i-\mu)^2}{2\sigma^2}\} \frac{1}{\sqrt{2\pi}\sqrt{c}\sigma}\exp\{-\frac{(\mu-\mu_0)^2}{2c\sigma^2}\}$.
+Recall the posterior distribution of $\mu$ with known $\sigma^2$, the above is the same case. So $\mu \mid x, \sigma^2\sim N(\frac{\mu_0 \sigma^2+nc\sigma^2 \bar{x}}{\sigma^2+nc\sigma^2},\frac{c\sigma^4}{\sigma^2+nc\sigma^2})$.
+2. The marginal posterior distribution of $\sigma$ is:   
+let $s=\sigma^2$,  
+$\pi(s\mid x) = \int \pi(\mu,s\mid x) d\mu \propto \int s^{-n/2} \exp\{-\frac{\sum_{i=1}^{n}(x_i-\mu)^2}{2s}\}s^{-1/2} \exp\{-\frac{(\mu-\mu_0)^2}{2cs}\}  s^{-\alpha_0 -1}\exp\{-\frac{\beta_0}{s}\} d\mu$
+$\propto s^{-\alpha_0 -\frac{n}{2} -1-\frac{1}{2}} \exp\{ -\frac{\beta_0}{s}\}\int \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\mu)^2}{2s} -\frac{(\mu-\mu_0)^2}{2cs}  \} d\mu$  
+Note that $\sum_{i=1}^{n}(x_i-\mu)^2 = \sum_{i=1}^{n}(x_i-\bar{x})^2 + \sum_{i=1}^{n}(\bar{x}-\mu)^2$.  
+$\pi(s\mid x) \propto s^{-\alpha_0 -\frac{n}{2} -1-\frac{1}{2}} \exp\{ -\frac{\beta_0}{s}\} \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{2s} \} \int \exp\{ -\frac{\sum_{i=1}^{n}(\bar{x}-\mu)^2}{2s} -\frac{(\mu-\mu_0)^2}{2cs}  \} d\mu$  
+$\propto s^{-\alpha_0 -\frac{n}{2} -1-\frac{1}{2}} \exp\{ -\frac{\beta_0}{s}\} \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{2s} \} \int \exp\{ -\frac{c\sum_{i=1}^{n}(\bar{x}-\mu)^2}{2cs} -\frac{(\mu-\mu_0)^2}{2cs}  \} d\mu$  
+$\propto s^{-\alpha_0 -\frac{n}{2} -1-\frac{1}{2}} \exp\{ -\frac{\beta_0}{s}\} \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{2s} \} \int \exp\{ -\frac{(\mu-\frac{nc\bar{x}+\mu_0}{nc+1})^2}{\frac{2cs}{nc+1}} -\frac{nc (\bar{x})^2 +\mu_0^2 - \frac{(nc\bar{x}+\mu_0)}{nc+1}}{2cs}  \} d\mu$   
+because the integration of $\mu$ will generate a normalizing constant $s^{\frac{1}{2}}$, so  
+$\propto s^{-\alpha_0 -\frac{n}{2} -1} \exp\{ -\frac{\beta_0}{s}\} \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{2s} \}  \exp\{ -\frac{nc (\bar{x})^2 +\mu_0^2 - \frac{(nc\bar{x}+\mu_0)}{nc+1}}{2cs}  \}$   
+$\propto s^{-\alpha_0 -\frac{n}{2} -1} \exp\{ -\frac{\beta_0}{s}\} \exp\{ -\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{2s} \}  \exp\{ -\frac{n}{2s(nc+1)}(\bar{x}-\mu_0)^2 \}$  
+$= s^{-\alpha_0 -\frac{n}{2} -1} \exp\{ -\frac{\beta_0 +\frac{1}{2}\sum_{i=1}^{n}(x_i-\bar{x})^2 +\frac{n}{2(nc+1)}(\bar{x}-\mu_0)^2}{s} \}$.  
+So, $\pi(\sigma^2 \mid x) \sim IG(\alpha_0 +\frac{n}{2},\beta_0 +\frac{1}{2}\sum_{i=1}^{n}(x_i-\bar{x})^2 +\frac{n}{2(nc+1)}(\bar{x}-\mu_0)^2)$.
+
+## 
+Question 1. For the daily maximum temperature data, $X_i \sim N(\mu,\sigma^2)$. Given the conjugate priors, show the posterior distributions of $\mu \mid \sigma^2$ and $\sigma^2$.  
+
+Question 2. For the daily maximum temperature data, $X_i \sim Exp(\lambda)$. Given the conjugate prior $\lambda \sim Ga(\alpha_0=0.01,\beta_0=0.01)$, show the posterior distributions of $\lambda$.
+
