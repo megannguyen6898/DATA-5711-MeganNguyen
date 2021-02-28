@@ -1,0 +1,30 @@
+---
+title: "W1 Statistical inference"
+author: "Megan Nguyen"
+date: "23/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignments
+
+**Q1.** Suppose $X\sim B(N,p)$, where $B(N,p)$ is the Binomial distribution whose Probability Mass Function is $P(X = k) = C_N^k p^k (1-p)^{N-k}$. The observations $(x_1,\cdots,x_n)$ are i.i.d samples of $X$. Given the prior distribution of $p$ as a Beta distribution with parameters as $\alpha_0,\beta_0$. The density function of the Beta distribution is $f(x\mid \alpha,\beta) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha-1} (1-x)^{\beta-1}$. Derive the posterior distribution of $p$.
+
+# Solutions
+
+The prior distribution
+\
+$\pi(p) \sim Be(\alpha_0,\beta_0)$
+\
+The posterior distribution of p 
+\
+$\pi(p\mid x) \propto f(x\mid p) \pi(p)$
+\
+$= C_N^k p^k (1-p)^{N-k} \frac{\Gamma(\alpha_0+\beta_0)}{\Gamma(\alpha_0) \Gamma(\beta_0)} p^{\alpha_0-1} (1-p)^{\beta_0-1}$
+\
+$= C_N^k \frac{\Gamma(\alpha_0+\beta_0)}{\Gamma(\alpha_0) \Gamma(\beta_0)} \ p^{k+\alpha_0-1} (1-p)^{N-k+\beta_0-1}$ 
+\
+$\propto C_N^k Be(k+\alpha_0,N-k+\beta_0)$
